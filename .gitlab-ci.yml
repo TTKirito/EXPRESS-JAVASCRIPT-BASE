@@ -1,0 +1,196 @@
+stages:
+  - prepare
+  - build
+  - deploy
+
+install_dependence:
+  stage: prepare
+  script:
+    - npm install
+  cache:
+    paths:
+      - ./node_modules
+    key: ${CI_COMMIT_REF_SLUG}
+    policy: push
+  only:
+    refs:
+      - develop
+      - staging
+    changes:
+      - package.json
+      - package-lock.json
+  tags:
+    - DEV
+
+build-develop:
+  stage: build
+  script:
+    - cd env
+    - sed -i "s|CI_DEV_MAX_POOL|$CI_DEV_MAX_POOL|g" DEV.env
+    - sed -i "s|CI_DEV_MIN_POOL|$CI_DEV_MIN_POOL|g" DEV.env
+    - sed -i "s|CI_DEV_API_PORT|$CI_DEV_API_PORT|g" DEV.env
+    - sed -i "s|CI_DEV_PATH_LOG|$CI_DEV_PATH_LOG|g" DEV.env
+    - sed -i "s|CI_DEV_FULL_LOG|$CI_DEV_FULL_LOG|g" DEV.env
+    - sed -i "s|CI_DEV_JWT_EXPIRE_TIME|$CI_DEV_JWT_EXPIRE_TIME|g" DEV.env
+    - sed -i "s|CI_DEV_MYSQL_HOST|$CI_DEV_MYSQL_HOST|g" DEV.env
+    - sed -i "s|CI_DEV_MYSQL_PORT|$CI_DEV_MYSQL_PORT|g" DEV.env
+    - sed -i "s|CI_DEV_MYSQL_USER|$CI_DEV_MYSQL_USER|g" DEV.env
+    - sed -i "s|CI_DEV_MYSQL_PASS|$CI_DEV_MYSQL_PASS|g" DEV.env
+    - sed -i "s|CI_DEV_MYSQL_DB|$CI_DEV_MYSQL_DB|g" DEV.env
+    - sed -i "s|CI_DEV_ADMIN_EMAIL|$CI_DEV_ADMIN_EMAIL|g" DEV.env
+    - sed -i "s|CI_DEV_ADMIN_PASS|$CI_DEV_ADMIN_PASS|g" DEV.env
+    - sed -i "s|CI_DEV_SALT_ROUNDS|$CI_DEV_SALT_ROUNDS|g" DEV.env
+    - sed -i "s|CI_DEV_S3_FILE_TYPE|$CI_DEV_S3_FILE_TYPE|g" DEV.env
+    - sed -i "s|CI_DEV_S3_KEY|$CI_DEV_S3_KEY|g" DEV.env
+    - sed -i "s|CI_DEV_S3_SECRET|$CI_DEV_S3_SECRET|g" DEV.env
+    - sed -i "s|CI_DEV_S3_REGION|$CI_DEV_S3_REGION|g" DEV.env
+    - sed -i "s|CI_DEV_S3_BUCKET|$CI_DEV_S3_BUCKET|g" DEV.env
+    - sed -i "s|CI_DEV_KOVAN_KEY|$CI_DEV_KOVAN_KEY|g" DEV.env
+    - sed -i "s|CI_DEV_JWT_SECRET|$CI_DEV_JWT_SECRET|g" DEV.env
+    - sed -i "s|CI_DEV_ETHERSCAN_API_KEY|$CI_DEV_ETHERSCAN_API_KEY|g" DEV.env
+    - sed -i "s|CI_DEV_BSC_API_KEY|$CI_DEV_BSC_API_KEY|g" DEV.env
+    - sed -i "s|CI_DEV_INFURA_API_KEY|$CI_DEV_INFURA_API_KEY|g" DEV.env
+    - sed -i "s|CI_DEV_UPDATE_COIN_RATIO_CRONJOB_INTERVAL|$CI_DEV_UPDATE_COIN_RATIO_CRONJOB_INTERVAL|g" DEV.env
+    - sed -i "s|CI_DEV_CALLER_ADDR|$CI_DEV_CALLER_ADDR|g" DEV.env
+    - sed -i "s|CI_DEV_CALLER_PRIV|$CI_DEV_CALLER_PRIV|g" DEV.env
+    - sed -i "s|CI_DEV_API_KEY_INTERNAL|$CI_DEV_API_KEY_INTERNAL|g" DEV.env
+    - sed -i "s|CI_DEV_API_URL_NFT|$CI_DEV_API_URL_NFT|g" DEV.env
+    - sed -i "s|CI_DEV_GET_GAS_ORACLE_CRONJOB_INTERVAL|$CI_DEV_GET_GAS_ORACLE_CRONJOB_INTERVAL|g" DEV.env
+    - sed -i "s|CI_DEV_BSCSCAN_API_KEY|$CI_DEV_BSCSCAN_API_KEY|g" DEV.env
+    - npm run build
+    - sudo rsync -hrvzgo --chown=centos:centos --delete $CI_PROJECT_DIR/ $CI_DEV_PATH
+  cache:
+    paths:
+      - ./node_modules
+    key: ${CI_COMMIT_REF_SLUG}
+    policy: pull
+  only:
+    - develop
+  tags:
+    - DEV
+deploy-develop:
+  stage: deploy
+  script:
+    - sudo -H -u centos bash -c "pm2 restart api"
+  dependencies:
+    - build-develop
+  only:
+    - develop
+  tags:
+    - DEV
+
+################3
+build-staging:
+  stage: build
+  script:
+    - cd env
+    - sed -i "s|CI_STG_MAX_POOL|$CI_STG_MAX_POOL|g" STG.env
+    - sed -i "s|CI_STG_MIN_POOL|$CI_STG_MIN_POOL|g" STG.env
+    - sed -i "s|CI_STG_API_PORT|$CI_STG_API_PORT|g" STG.env
+    - sed -i "s|CI_STG_PATH_LOG|$CI_STG_PATH_LOG|g" STG.env
+    - sed -i "s|CI_STG_FULL_LOG|$CI_STG_FULL_LOG|g" STG.env
+    - sed -i "s|CI_STG_JWT_EXPIRE_TIME|$CI_STG_JWT_EXPIRE_TIME|g" STG.env
+    - sed -i "s|CI_STG_MYSQL_HOST|$CI_STG_MYSQL_HOST|g" STG.env
+    - sed -i "s|CI_STG_MYSQL_PORT|$CI_STG_MYSQL_PORT|g" STG.env
+    - sed -i "s|CI_STG_MYSQL_USER|$CI_STG_MYSQL_USER|g" STG.env
+    - sed -i "s|CI_STG_MYSQL_PASS|$CI_STG_MYSQL_PASS|g" STG.env
+    - sed -i "s|CI_STG_MYSQL_DB|$CI_STG_MYSQL_DB|g" STG.env
+    - sed -i "s|CI_STG_ADMIN_EMAIL|$CI_STG_ADMIN_EMAIL|g" STG.env
+    - sed -i "s|CI_STG_ADMIN_PASS|$CI_STG_ADMIN_PASS|g" STG.env
+    - sed -i "s|CI_STG_SALT_ROUNDS|$CI_STG_SALT_ROUNDS|g" STG.env
+    - sed -i "s|CI_STG_S3_FILE_TYPE|$CI_STG_S3_FILE_TYPE|g" STG.env
+    - sed -i "s|CI_STG_S3_KEY|$CI_STG_S3_KEY|g" STG.env
+    - sed -i "s|CI_STG_S3_SECRET|$CI_STG_S3_SECRET|g" STG.env
+    - sed -i "s|CI_STG_S3_REGION|$CI_STG_S3_REGION|g" STG.env
+    - sed -i "s|CI_STG_S3_BUCKET|$CI_STG_S3_BUCKET|g" STG.env
+    - sed -i "s|CI_STG_KOVAN_KEY|$CI_STG_KOVAN_KEY|g" STG.env
+    - sed -i "s|CI_STG_JWT_SECRET|$CI_STG_JWT_SECRET|g" STG.env
+    - sed -i "s|CI_STG_ETHERSCAN_API_KEY|$CI_STG_ETHERSCAN_API_KEY|g" STG.env
+    - sed -i "s|CI_STG_BSC_API_KEY|$CI_STG_BSC_API_KEY|g" STG.env
+    - sed -i "s|CI_STG_INFURA_API_KEY|$CI_STG_INFURA_API_KEY|g" STG.env
+    - sed -i "s|CI_STG_UPDATE_COIN_RATIO_CRONJOB_INTERVAL|$CI_STG_UPDATE_COIN_RATIO_CRONJOB_INTERVAL|g" STG.env
+    - sed -i "s|CI_STG_CALLER_ADDR|$CI_STG_CALLER_ADDR|g" STG.env
+    - sed -i "s|CI_STG_CALLER_PRIV|$CI_STG_CALLER_PRIV|g" STG.env
+    - sed -i "s|CI_STG_API_KEY_INTERNAL|$CI_STG_API_KEY_INTERNAL|g" STG.env
+    - sed -i "s|CI_STG_API_URL_NFT|$CI_STG_API_URL_NFT|g" STG.env
+    - sed -i "s|CI_STG_GET_GAS_ORACLE_CRONJOB_INTERVAL|$CI_STG_GET_GAS_ORACLE_CRONJOB_INTERVAL|g" STG.env
+    - sed -i "s|CI_STG_BSCSCAN_API_KEY|$CI_STG_BSCSCAN_API_KEY|g" DEV.env
+    - npm run build
+    - rsync -hrvzgo --chown=centos:centos --delete -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" $CI_PROJECT_DIR/ $CI_STG_USER@$CI_STG_IP_ADDR:$CI_STG_SOURCE
+  cache:
+    paths:
+      - ./node_modules
+    key: ${CI_COMMIT_REF_SLUG}
+    policy: pull
+  only:
+    - staging
+  tags:
+    - DEV
+deploy-staging:
+  stage: deploy
+  script:
+    - ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $CI_STG_USER@$CI_STG_IP_ADDR "pm2 restart all"
+  dependencies:
+    - build-staging
+  only:
+    - staging
+  tags:
+    - DEV
+
+################
+build-production:
+  stage: build
+  script:
+    - cd env
+    - sed -i "s|CI_PRO_MAX_POOL|$CI_PRO_MAX_POOL|g" PRO.env
+    - sed -i "s|CI_PRO_MIN_POOL|$CI_PRO_MIN_POOL|g" PRO.env
+    - sed -i "s|CI_PRO_API_PORT|$CI_PRO_API_PORT|g" PRO.env
+    - sed -i "s|CI_PRO_PATH_LOG|$CI_PRO_PATH_LOG|g" PRO.env
+    - sed -i "s|CI_PRO_FULL_LOG|$CI_PRO_FULL_LOG|g" PRO.env
+    - sed -i "s|CI_PRO_JWT_EXPIRE_TIME|$CI_PRO_JWT_EXPIRE_TIME|g" PRO.env
+    - sed -i "s|CI_PRO_MYSQL_HOST|$CI_PRO_MYSQL_HOST|g" PRO.env
+    - sed -i "s|CI_PRO_MYSQL_PORT|$CI_PRO_MYSQL_PORT|g" PRO.env
+    - sed -i "s|CI_PRO_MYSQL_USER|$CI_PRO_MYSQL_USER|g" PRO.env
+    - sed -i "s|CI_PRO_MYSQL_PASS|$CI_PRO_MYSQL_PASS|g" PRO.env
+    - sed -i "s|CI_PRO_MYSQL_DB|$CI_PRO_MYSQL_DB|g" PRO.env
+    - sed -i "s|CI_PRO_ADMIN_EMAIL|$CI_PRO_ADMIN_EMAIL|g" PRO.env
+    - sed -i "s|CI_PRO_ADMIN_PASS|$CI_PRO_ADMIN_PASS|g" PRO.env
+    - sed -i "s|CI_PRO_SALT_ROUNDS|$CI_PRO_SALT_ROUNDS|g" PRO.env
+    - sed -i "s|CI_PRO_S3_FILE_TYPE|$CI_PRO_S3_FILE_TYPE|g" PRO.env
+    - sed -i "s|CI_PRO_S3_KEY|$CI_PRO_S3_KEY|g" PRO.env
+    - sed -i "s|CI_PRO_S3_SECRET|$CI_PRO_S3_SECRET|g" PRO.env
+    - sed -i "s|CI_PRO_S3_REGION|$CI_PRO_S3_REGION|g" PRO.env
+    - sed -i "s|CI_PRO_S3_BUCKET|$CI_PRO_S3_BUCKET|g" PRO.env
+    - sed -i "s|CI_PRO_KOVAN_KEY|$CI_PRO_KOVAN_KEY|g" PRO.env
+    - sed -i "s|CI_PRO_JWT_SECRET|$CI_PRO_JWT_SECRET|g" PRO.env
+    - sed -i "s|CI_PRO_ETHERSCAN_API_KEY|$CI_PRO_ETHERSCAN_API_KEY|g" PRO.env
+    - sed -i "s|CI_PRO_BSC_API_KEY|$CI_PRO_BSC_API_KEY|g" PRO.env
+    - sed -i "s|CI_PRO_INFURA_API_KEY|$CI_PRO_INFURA_API_KEY|g" PRO.env
+    - sed -i "s|CI_PRO_UPDATE_COIN_RATIO_CRONJOB_INTERVAL|$CI_PRO_UPDATE_COIN_RATIO_CRONJOB_INTERVAL|g" PRO.env
+    - sed -i "s|CI_PRO_CALLER_ADDR|$CI_PRO_CALLER_ADDR|g" PRO.env
+    - sed -i "s|CI_PRO_CALLER_PRIV|$CI_PRO_CALLER_PRIV|g" PRO.env
+    - sed -i "s|CI_PRO_API_KEY_INTERNAL|$CI_PRO_API_KEY_INTERNAL|g" PRO.env
+    - sed -i "s|CI_PRO_API_URL_NFT|$CI_PRO_API_URL_NFT|g" PRO.env
+    - sed -i "s|CI_PRO_GET_GAS_ORACLE_CRONJOB_INTERVAL|$CI_PRO_GET_GAS_ORACLE_CRONJOB_INTERVAL|g" PRO.env
+    - sed -i "s|CI_PRO_BSCSCAN_API_KEY|$CI_PRO_BSCSCAN_API_KEY|g" PRO.env
+    - npm run build
+    - rsync -hrvzgo --chown=centos:centos --delete -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" $CI_PROJECT_DIR/ $CI_PRO_USER@$CI_PRO_IP_ADDR:$CI_PRO_SOURCE
+  cache:
+    paths:
+      - ./node_modules
+    key: ${CI_COMMIT_REF_SLUG}
+    policy: pull
+  only:
+    - master
+  tags:
+    - PRO
+deploy-production:
+  stage: deploy
+  script:
+    - ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $CI_PRO_USER@$CI_PRO_IP_ADDR "pm2 restart all"
+  dependencies:
+    - build-production
+  only:
+    - master
+  tags:
+    - PRO
