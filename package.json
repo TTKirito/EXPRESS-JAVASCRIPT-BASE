@@ -1,7 +1,7 @@
 {
-  "name": "ibo-back-end",
+  "name": "back-end",
   "version": "1.0.0",
-  "description": "Ibo api project",
+  "description": "api project",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

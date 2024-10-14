@@ -2,7 +2,7 @@ module.exports = {
   LCL: {
     username: process.env['LCL_MYSQL_USER'] || 'root',
     password: process.env['LCL_MYSQL_PASS'] || 'tanduy899',
-    database: process.env['LCL_MYSQL_DB'] || 'ibo',
+    database: process.env['LCL_MYSQL_DB'] || '',
     host: process.env['LCL_MYSQL_HOST'] || 'localhost',
     logging: false,
     dialect: 'mysql'

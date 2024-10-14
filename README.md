@@ -1,6 +1,3 @@
-# IBO PROJECT
-
-![IBO](https://dev.bintech.bappartners.com/bf9ea1a8264fe32d18a22b44fb380cd8.png)
 
 ## Install requirement
 
@@ -21,7 +18,6 @@
 ## Install project và run server
 
 - **Step 1:** Clone git repository:
-  `git clone https://gitlab-new.bap.jp/BAPSoftware/outsource/s0089.tokenibo/token-ibo-backend.git`
 - **Step 2:** Install packages:
   `npm install`
 - **Step 3:** In folder env:
@@ -38,7 +34,6 @@
 ## Create database
 
 - At **Step 4** in **Install**, **database migration** process will be run automatically.
-- If there is no schema created, please create a schema name **ibo** in MySQL management (example: MySQL WorkBench) and re-run **Step 4** in **Install**.
 
   Refer to the list of environments in the above section.
 

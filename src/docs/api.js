@@ -19,7 +19,6 @@ const api = (port) => ({
       description: 'Local Server',
     },
     {
-      url: 'https://tokenibo.dev.api.bappartners.com',
       description: 'Dev Server'
     }
   ],

@@ -8,8 +8,6 @@ const Response = {
           project_id: {type: 'number', example: 473},
           wallet_id: {type: 'number', example: 113},
           network_id: {type: 'number', example: 4},
-          project_logo: {type: 'string', example: "https://tokenibo-dev.s3.amazonaws.com/anh-dong-de-thuong-nhat-doc-dao-nhat_112053817--1632475692805.gif"},
-          project_image: {type: 'string', example: "https://tokenibo-dev.s3.amazonaws.com/imgpsh_fullsize_anim--1632475696800.gif"},
           project_name: {type: 'string', example: "New"},
           project_sub_title: {type: 'string', example: "abc"},
           project_website: {type: 'string', example: "https://website.com"},
